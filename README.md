@@ -48,6 +48,20 @@ Currently, there is only one mode of presenting/handling the panic, by replacing
 Additional modes in the future are possible, and should be configured using feature flags, as only one mode seems to
 make sense.
 
+## Yew
+
+Yew already sets a default panic hook. This can be overridden using:
+
+```rust
+pub fn main() -> Result<(), JsValue> {
+    // provide a custom panic hook
+    yew::set_custom_panic_hook(Box::new(browser_panic_hook::handle_panic));
+    // run the application
+    yew::Renderer::<app::Application>::new().render();
+    Ok(())
+}
+```
+
 ## Future improvements
 
 Additional improvements could be done, like:
