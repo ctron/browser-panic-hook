@@ -11,7 +11,7 @@ fn cause_panic() {
 
 pub fn main() -> Result<(), JsValue> {
     wasm_logger::init(wasm_logger::Config::new(LOG_LEVEL));
-    browser_panic_hook::set_once();
+    browser_panic_hook::set_once_default();
 
     if let Some(element) = gloo_utils::document().get_element_by_id("panic") {
         gloo_events::EventListener::new(&element, "click", |_| {

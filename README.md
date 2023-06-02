@@ -5,48 +5,63 @@
 [![crates.io](https://img.shields.io/crates/v/browser-panic-hook.svg)](https://crates.io/crates/browser-panic-hook)
 [![docs.rs](https://docs.rs/browser-panic-hook/badge.svg)](https://docs.rs/browser-panic-hook)
 
-
 A go-to panic handler for WebAssembly based Rust application is [console_error_panic_hook](https://github.com/rustwasm/console_error_panic_hook), which does the job, but isn't really end user-friendly.
 
 In the case of running the WebAssembly application as a frontend application, we do have the browser which can help
 interacting with the user, so why not leverage it.
 
-That is what this crate does, present the panic to the user in a reasonable way.
+That is what this crate does, failing in style:
+
+![Screenshot of an example](docs/example1.png)
 
 ## Presentation
 
-In order to keep things relatively simple, some basic HTML with some CSS classes is rendered. This can be used to
-control the styling of the representation.
+The panic is also always still logged to the console as a first step. As it might happen that running the panic
+handler might run into trouble as well.
 
-In order to understand what can be styled, please take a look at the actual HTML.
+Next, it depends on what presentation mode you register. There is a `Basic` one, which takes over the body of the
+document and renders some simple HTML structure, including some CSS class names. In combination with an existing
+stylesheet, this may already be enough.
 
-**NOTE:** I most cases you will have a style sheet in place, as only basic HTML is rendered, it might actually
-be necessary to provide some styles, other overriding or adapting to your environment.
+The `CustomBody` mode allow to provide a function, which renders the full body. This can be used to create more
+customized output for frameworks like PatternFly or Bootstrap.
 
-The panic is also always still logged to the console.
+Everything boils down to a trait (`PresentationMode`), for which you can also provide a custom implementation.
+
+Just note, your application is already panicking, so you should try to keep it simple, or rely on some basic
+browser functionality.
 
 ## Usage
 
-In a nutshell, you need to add the dependency and then set the handler once:
+In any case, you need to add this crate a dependency to your project, and register the panic handler. Registering
+can be as easy as:
 
 ```rust
 pub fn main() -> Result<(), JsValue> {
-    browser_panic_hook::set_once();
+    browser_panic_hook::set_once_default();
 
     // run your application ...
-
     Ok(())
 }
 ```
 
-A more complete example can be found in the [example](example) folder.
+You can also use a more customized variant:
 
-## Modes
+```rust
+pub fn main() -> Result<(), JsValue> { 
+    browser_panic_hook::set_once(|| {
+        browser_panic_hook::CustomBody(Box::new(|details| {
+            // render new body
+            format!("…")
+        }))
+    });
+ 
+    // run your application ...
+    Ok(())
+}
+```
 
-Currently, there is only one mode of presenting/handling the panic, by replacing the full body content.
-
-Additional modes in the future are possible, and should be configured using feature flags, as only one mode seems to
-make sense.
+More complete examples can be found in the [examples](examples) folder.
 
 ## Yew
 
@@ -55,7 +70,7 @@ Yew already sets a default panic hook. This can be overridden using:
 ```rust
 pub fn main() -> Result<(), JsValue> {
     // provide a custom panic hook
-    yew::set_custom_panic_hook(Box::new(browser_panic_hook::handle_panic));
+    yew::set_custom_panic_hook(Basic.into_panic_hook());
     // run the application
     yew::Renderer::<app::Application>::new().render();
     Ok(())

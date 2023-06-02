@@ -24,11 +24,16 @@ jobs:
 
       - name: Check
         run: |
-          cargo check --release
+          cargo check
+
+      - name: Check examples
+        run: |
+          cargo check --manifest-path examples/basic/Cargo.toml
+          cargo check --manifest-path examples/custom/Cargo.toml
 
       - name: Test
         run: |
-          cargo test --release
+          cargo test
 
       - name: Install binstall
         run: |

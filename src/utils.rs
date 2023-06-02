@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use std::panic::PanicInfo;
 
 /// Extract the message of the panic info
@@ -28,4 +29,38 @@ pub fn extract_message(info: &PanicInfo) -> String {
     // we should have captured everything between the two outer most '
 
     s.to_string()
+}
+
+pub fn escape_text(text: &str) -> String {
+    text.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('\'', "&#39;")
+        .replace('"', "&quot;")
+}
+
+pub enum Unescaped {
+    Unsafe(String),
+    Safe(String),
+}
+
+impl Unescaped {
+    pub fn safe(s: impl Into<String>) -> Self {
+        Unescaped::Safe(s.into())
+    }
+}
+
+impl From<String> for Unescaped {
+    fn from(value: String) -> Self {
+        Self::Unsafe(value)
+    }
+}
+
+impl Display for Unescaped {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Unsafe(s) => f.write_str(&escape_text(&s)),
+            Self::Safe(s) => f.write_str(s),
+        }
+    }
 }

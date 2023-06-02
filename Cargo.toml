@@ -20,3 +20,5 @@ features = [
     "Window"
 ]
 
+[dev-dependencies]
+yew = { version = "0.20", features = ["csr"] }
