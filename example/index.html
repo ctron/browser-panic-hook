@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browser Panic Hook Example</title>
+
+  <link data-trunk rel="scss" href="assets/styles.scss">
+
+  <style>
+    h1 {
+      color: red;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<header>
+  <h1>Browser Panic Hook – Example</h1>
+</header>
+<main>
+  <section>
+    <h2>Try it out</h2>
+    <p>
+      Once you press the following button, the WebAssembly based application will panic. Depending on the panic hook
+      selected during the compilation, the result will be different.
+    </p>
+    <button id="panic" type="button">Panic!</button>
+  </section>
+
+  <section>
+    <h2>Also note</h2>
+    <p>
+      This page already has some styling. Through additional styling of the "panicked" elements, the panic information
+      can be shown in a different style. By default, it would inherit the style sheet of the application.
+    </p>
+  </section>
+</main>
+
+</body>
+
+</html>
